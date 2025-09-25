@@ -2,9 +2,6 @@ import telebot
 from currency_converter import CurrencyConverter
 from telebot import types
 
-#from datetime import datetime
-#urrent_date = datetime.now().date()
-
 currency = CurrencyConverter()
 
 bot = telebot.TeleBot('8074439906:AAE_cTas9Cye_jsGmxpvYKegQBHgVcZ_SX0')
@@ -76,8 +73,7 @@ def summa(message):
 def callback(call):
     value = call.data.upper().split('/')
     res = currency.convert(value[0], value[1])
-    #from_currency = value[0]  # например, 'USD'
-    #to_currency = value[1]  # например, 'RUB'
+
 
 
 
