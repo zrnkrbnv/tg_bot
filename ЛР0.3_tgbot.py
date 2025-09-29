@@ -1,15 +1,19 @@
+# импортируем нужные библиотеки
 import telebot
 from currency_converter import CurrencyConverter
 from telebot import types
+
 bot = telebot.TeleBot('8074439906:AAE_cTas9Cye_jsGmxpvYKegQBHgVcZ_SX0')
 currency = CurrencyConverter()
 amount = 0
 
+# обработка команды /start
 @bot.message_handler(commands=['start'])
 
 def start(message):
     first_name = message.from_user.first_name
     last_name = message.from_user.last_name
+    # цикл проверяет какие данные указаны в профиле пользователя, чтобы отправить ему корректное начальное сообщение
     if first_name and last_name:
         greeting = f'Привет, {first_name} {last_name}! Введите сумму:)'
     elif first_name:
@@ -22,6 +26,7 @@ def start(message):
 
     bot.register_next_step_handler(message, summa)
 
+# проверяем корректность введенного пользователем формата
 def summa(message):
     global amount
     try:
@@ -32,7 +37,7 @@ def summa(message):
         return
     if amount > 0:
         markup = types.InlineKeyboardMarkup(row_width=2)
-
+# добавляем кнопки
         btn1 = types.InlineKeyboardButton('RUB🇷🇺 → USD🇺🇸', callback_data='RUB/USD')
         btn2 = types.InlineKeyboardButton('RUB🇷🇺 → EUR🇪🇺', callback_data='RUB/EUR')
         btn3 = types.InlineKeyboardButton('RUB🇷🇺 → GBP🇬🇧', callback_data='RUB/GBP')
@@ -44,6 +49,7 @@ def summa(message):
         bot.send_message(message.chat.id, 'Число должно быть больше 0. Введите сумму')
         bot.register_next_step_handler(message, summa)
 
+# создаем декоратор обработчика callback-запросов после нажатия кнопок
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
     values = call.data.split('/')
@@ -57,4 +63,5 @@ def callback(call):
     elif values[1] == 'CNY':
         bot.send_message(call.message.chat.id, f'{amount} RUB = {round(res, 2)} CNY\nМожете ввести другую сумму💸')
     bot.register_next_step_handler(call.message, summa)
+# запускаем бесконечныйц цикл работы бота
 bot.polling(none_stop=True)
